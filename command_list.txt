@@ -1,0 +1,114 @@
+# создаем виртуальное окружение venv для работы
+python -m venv venv
+
+# активируем виртуальное окружение
+venv\scripts\activate
+
+# устанавливаем django
+pip install django
+
+# обновляем pip
+python -m pip install --upgrade pip
+
+# создаем пустой проект news_portal
+django-admin startproject news_portal
+
+# переходим в папку с проектом
+cd news_portal
+
+# запускаем и проверяем, что всё работает
+python manage.py runserver
+
+# проводим первые миграции
+python manage.py migrate
+
+# создаем новое приложение в проекте (news)
+python manage.py startapp news
+
+# после описания моделей в файле models.py создаем миграцию и мигрируем
+python manage.py makemigrations
+python manage.py migrate
+
+# запускаем django-shell
+python manage.py shell
+
+# в нем импортируем модели
+from news.models import *
+
+# в нем же создаем новых пользователей
+u1 = User.objects.create_user(username = 'User1')
+u2 = User.objects.create_user(username = 'User2')
+
+# в нем же делаем из них авторов
+Author.objects.create(authorUser = u1)
+Author.objects.create(authorUser = u2)
+
+# в нем же создаем 4 категории
+Category.objects.create(name = 'Category_1')
+Category.objects.create(name = 'Category_2')
+Category.objects.create(name = 'Category_3')
+Category.objects.create(name = 'Category_4')
+
+# в нем же создаем две статьи и одну новость
+auth_1 = Author.objects.get(id=1)
+auth_2 = Author.objects.get(id=2)
+Post.objects.create(author=auth_1, categoryType='AR', title='Article number One', text = 'This is faker text for article or news. It is very very long. This is faker text for article or news. It is very very long.. This is faker text for article or news. It is very very long. This is faker text for article or news. It is very very long.')
+Post.objects.create(author=auth_2, categoryType='AR', title='Article number Two', text = 'This is faker text for article or news. It is very very long. This is faker text for article or news. It is very very long.. This is faker text for article or news. It is very very long. This is faker text for article or news. It is very very long.')
+Post.objects.create(author=auth_1, categoryType='NW', title='Hot news!', text = 'This is faker text for article or news. It is very very long. This is faker text for article or news. It is very very long.. This is faker text for article or news. It is very very long. This is faker text for article or news. It is very very long.')
+
+# там же присваиваем им категории
+p_1 = Post.objects.get(id=1)
+p_2 = Post.objects.get(id=2)
+p_3 = Post.objects.get(id=3)
+c_1 = Category.objects.get(id=1)
+c_2 = Category.objects.get(id=2)
+c_3 = Category.objects.get(id=3)
+c_4 = Category.objects.get(id=4)
+PostCategory.objects.create(postThrough=p_1, categoryThrough=c_1)
+PostCategory.objects.create(postThrough=p_1, categoryThrough=c_2)
+PostCategory.objects.create(postThrough=p_1, categoryThrough=c_3)
+PostCategory.objects.create(postThrough=p_2, categoryThrough=c_4)
+PostCategory.objects.create(postThrough=p_2, categoryThrough=c_1)
+PostCategory.objects.create(postThrough=p_2, categoryThrough=c_2)
+PostCategory.objects.create(postThrough=p_3, categoryThrough=c_3)
+PostCategory.objects.create(postThrough=p_3, categoryThrough=c_4)
+PostCategory.objects.create(postThrough=p_3, categoryThrough=c_1)
+
+# там же создаем комментарии к постам
+Comment.objects.create(commentPost=p_1, text='Text for the first comment', commentUser=Author.objects.get(id=1).authorUser)
+Comment.objects.create(commentPost=p_1, text='Text for the second comment', commentUser=Author.objects.get(id=2).authorUser)
+Comment.objects.create(commentPost=p_2, text='Text for the third comment', commentUser=Author.objects.get(id=1).authorUser)
+Comment.objects.create(commentPost=p_3, text='Text for the four comment', commentUser=Author.objects.get(id=2).authorUser)
+
+# лайкаем и дизлайкаем комментарии
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=2).dislike()
+Comment.objects.get(id=2).dislike()
+Comment.objects.get(id=2).dislike()
+Comment.objects.get(id=3).dislike()
+Comment.objects.get(id=4).like()
+
+# обновим рейтинги авторам
+Author.objects.get(id=1).update_rating()
+Author.objects.get(id=2).update_rating()
+
+# выведем 'лучшего' автора
+Author.objects.order_by('-ratingAuthor')[:1]
+
+# выведем лучшую статью
+Post.objects.get(id=1).like()
+p = Post.objects.order_by('-rating')[:1]
+p[0].dateCreation
+p[0].rating
+p[0].title
+p[0].preview()
+p[0].author.authorUser
+
+# вывод комментариев к статье
+c = Comment.objects.filter(commentPost=p[0].author.id)
+for val in c:
+    val.text
+    val.rating
+    val.dateCreation
+    val.commentUser
