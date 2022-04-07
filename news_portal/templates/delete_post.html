@@ -1,0 +1,27 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+<!-- Название у нас будет Product -->
+{% block title %}
+Delete post | {{ post.title|censor }}
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+<h1>{{ post.title|censor }}</h1>
+<p><small>Date publication: {{ post.dateCreation|date:'d.m.Y' }}</small></p>
+<p>{{ post.text|censor }}</p>
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="id_post" name="id_post" value="{{ post.id }}">
+            <h5 class="card-title">Delete post "{{ post.title|censor }}"</h5>
+            <p class="card-text">Are you sure you want to delete this post?</p>
+            <button type="submit" class="btn btn-primary">Yes</button>
+            <a type="submit" class="btn btn-primary" href="/news/{{ post.id }}">No</a>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,66 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+{% block title %}
+All News
+{% endblock title %}
+
+{% block content %}
+    <h1>All News</h1>
+    <!--<p><small>All news - {{ postList|length }}</small></p>-->
+    {% if postList %}
+        <!--{{ postList }}-->
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for post in postList %}
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title|censor }}</h5>
+                        <p class="card-text">{{ post.text|censor|truncatechars:20 }}</p>
+                        <p>
+                            <a href="/news/{{ post.id }}">Read more</a> | <a href="/news/{{ post.id }}/edit">Edit</a> | <a href="/news/{{ post.id }}/delete">Delete</a>
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Author: {{ post.author.authorUser }}</small><br />
+                        <small class="text-muted">Date publication: {{ post.dateCreation|date:'d.m.Y' }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% if is_paginated %}
+        <hr />
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link" href="#">{{ num }}</a>
+                    </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+            {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+        {% else %}
+            <p><strong>Not news =(</strong></p>
+        {% endif %}
+{% endblock content %}

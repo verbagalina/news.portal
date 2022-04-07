@@ -1,0 +1,53 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Edit Post | {{ post.title }}
+{% endblock title %}
+
+{% block content %}
+    <h1>Edit post</h1>
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="id_post" name="id_post" value="{{ post.id }}">
+                <div class="mb-3">
+                    <label for="id_title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="id_title" name="title" value="{{ post.title }}">
+                </div>
+                <div class="mb-3">
+                    <label for="id_text" class="form-label">Text</label>
+                    <textarea class="form-control" id="id_text" name="text">{{ post.text }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="id_category-type" class="form-label">Category Type</label>
+                    <select class="form-select" id="id_category-type" name="category-type">
+                        <option value="NW" selected>News</option>
+                        <option value="AR">Article</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="id_author" class="form-label">Author</label>
+                    <select class="form-select" id="id_author" name="author">
+                        {% for user in users %}
+                            <option value="{{ user.authorUser.id }}" {% if user == post.author %}selected{% endif %}>{{ user.authorUser }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Post category</label>
+                    {% for val in categories %}
+                        <div class="form-check">
+                            <input class="form-check-input" id="{{ val.name }}" name="category-{{ val.id }}" type="checkbox"
+                                   value="{{ val.id }}" {% if val.ischeck == 1 %}checked{% endif %}>
+                            <label class="form-check-label" for="{{ val.name }}">
+                                {{ val.name }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary">Edit post</button>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
