@@ -1,0 +1,52 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Registration page
+{% endblock title %}
+{% block content %}
+    <h1>Registration</h1>
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="POST"  action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">Username</label>
+                    <input type="text" name="username" maxlength="150" autofocus required id="id_username" class="form-control">
+                    <div id="usernameHelper" class="form-text">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_first_name" class="form-label">First name</label>
+                    <input type="text" name="first_name" required id="id_first_name" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="id_last_name" class="form-label">Last name</label>
+                    <input type="text" name="last_name" required id="id_last_name" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="id_email" class="form-label">Email</label>
+                    <input type="email" name="email" required id="id_email" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="id_password1" class="form-label">Password</label>
+                    <input type="password" name="password1" autocomplete="new-password" required id="id_password1" class="form-control">
+                    <div id="passwordHelper" class="form-text">
+                        <ul>
+                            <li>Your password can’t be too similar to your other personal information.</li>
+                            <li>Your password must contain at least 8 characters.</li>
+                            <li>Your password can’t be a commonly used password.</li>
+                            <li>Your password can’t be entirely numeric.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_password2" class="form-label">Password confirmation</label>
+                    <input type="password" name="password2" autocomplete="new-password" required id="id_password2" class="form-control">
+                    <div id="password2Helper" class="form-text">
+                        Enter the same password as before, for verification.
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Registration</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

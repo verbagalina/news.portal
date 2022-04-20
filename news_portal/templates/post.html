@@ -11,11 +11,14 @@ Post | {{ post.title|censor }}
 <h1>{{ post.title|censor }}</h1>
 <p><small>Date publication: {{ post.dateCreation|date:'d.m.Y' }}</small></p>
 <p>{{ post.text|censor }}</p>
-<<<<<<< HEAD
-=======
-<p>
-    <a href="/news/{{ post.id }}/edit">Edit</a> | <a href="/news/{{ post.id }}/delete">Delete</a>
-</p>
->>>>>>> 7bbca5d2 (Add, Edit, Delete)
+{% if request.user.is_authenticated and not is_not_premium %}
+    <p>
+        <a href="/news/{{ post.id }}/edit">Edit</a> | <a href="/news/{{ post.id }}/delete">Delete</a>
+    </p>
+{% elif request.user.is_authenticated and is_not_premium %}
+    <p>
+        In order to add, edit or delete news, <a href="/sign/upgrade/" data-bs-toggle="tooltip" data-bs-placement="top" title="BECOME AN AUTHOR!">you need to become an author</a>.
+    </p>
+{% endif %}
 
 {% endblock content %}

@@ -7,6 +7,11 @@ All News
 {% block content %}
     <h1>All News</h1>
     <p><small>All news - {{ postList|length }}</small></p>
+{% if request.user.is_authenticated and is_not_premium %}
+    <p>
+        In order to add, edit or delete news, <a href="/sign/upgrade/" data-bs-toggle="tooltip" data-bs-placement="top" title="BECOME AN AUTHOR!">you need to become an author</a>.
+    </p>
+{% endif %}
     {% if postList %}
         <!--{{ postList }}-->
         <div class="row row-cols-1 row-cols-md-3 g-4">

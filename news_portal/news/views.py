@@ -1,29 +1,24 @@
-<<<<<<< HEAD
-from django.shortcuts import render
-
-# Create your views here.
-from django.views.generic import ListView, DetailView
-from .models import Post
-=======
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.models import User
 from .models import *
 from .filters import PostFilter
 from django.shortcuts import redirect
->>>>>>> 7bbca5d2 (Add, Edit, Delete)
 
 
 class PostsList(ListView):
     model = Post
     ordering = '-dateCreation'
     queryset = Post.objects.filter(categoryType='NW')
-<<<<<<< HEAD
-    template_name = 'postList.html'
-    context_object_name = 'postList'
-=======
     template_name = 'post_list.html'
     context_object_name = 'postList'
     paginate_by = 5
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_premium'] = not self.request.user.groups.filter(name='authors').exists()
+        return context
+
 
 class PostsSearch(ListView):
     model = Post
@@ -44,23 +39,32 @@ class PostsSearch(ListView):
     def get_queryset(self):
         return self.get_filter().qs
 
-    def get_context_data(self, *args, **kwargs):
-        return {
-            **super().get_context_data(*args, **kwargs),
-            'filter': self.get_filter()
-        }
->>>>>>> 7bbca5d2 (Add, Edit, Delete)
+    #def get_context_data(self, *args, **kwargs):
+    #    return {
+    #        **super().get_context_data(*args, **kwargs),
+    #        'filter': self.get_filter()
+    #    }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter'] = self.get_filter()
+        context['is_not_premium'] = not self.request.user.groups.filter(name='authors').exists()
+        return context
 
 
 class PostDetail(DetailView):
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
-<<<<<<< HEAD
-=======
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_premium'] = not self.request.user.groups.filter(name='authors').exists()
+        return context
 
 
-class PostEdit(DetailView):
+class PostEdit(PermissionRequiredMixin, DetailView):
+    permission_required = ('news.add_post', 'news.change_post', 'news.delete_post',)
     model = Post
     context_object_name = 'post'
     template_name = 'edit_post.html'
@@ -113,7 +117,8 @@ class PostEdit(DetailView):
         return redirect(f'/news/{id}')
 
 
-class DeletePost(DetailView):
+class DeletePost(PermissionRequiredMixin, DetailView):
+    permission_required = ('news.add_post', 'news.change_post', 'news.delete_post',)
     model = Post
     template_name = 'delete_post.html'
     context_object_name = 'post'
@@ -124,7 +129,8 @@ class DeletePost(DetailView):
         return redirect(f'/news')
 
 
-class AddPosts(ListView):
+class AddPosts(PermissionRequiredMixin, ListView):
+    permission_required = ('news.add_post', 'news.change_post', 'news.delete_post',)
     model = Post
     template_name = 'add_post.html'
     context_object_name = 'post'
@@ -163,4 +169,3 @@ class AddPosts(ListView):
                 pc = PostCategory(postThrough=post, categoryThrough=c)
                 pc.save()
         return redirect(f'/news/{post.id}')  #super().get(request, *args, **kwargs)
->>>>>>> 7bbca5d2 (Add, Edit, Delete)

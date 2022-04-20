@@ -6,6 +6,11 @@ All News
 
 {% block content %}
     <h1>All News</h1>
+{% if request.user.is_authenticated and is_not_premium %}
+    <p>
+        In order to add, edit or delete news, <a href="/sign/upgrade/" data-bs-toggle="tooltip" data-bs-placement="top" title="BECOME AN AUTHOR!">you need to become an author</a>.
+    </p>
+{% endif %}
     <!--<p><small>All news - {{ postList|length }}</small></p>-->
     {% if postList %}
         <!--{{ postList }}-->
@@ -17,7 +22,8 @@ All News
                         <h5 class="card-title">{{ post.title|censor }}</h5>
                         <p class="card-text">{{ post.text|censor|truncatechars:20 }}</p>
                         <p>
-                            <a href="/news/{{ post.id }}">Read more</a> | <a href="/news/{{ post.id }}/edit">Edit</a> | <a href="/news/{{ post.id }}/delete">Delete</a>
+                            <a href="/news/{{ post.id }}">Read more</a> {% if request.user.is_authenticated and not is_not_premium %}| <a href="/news/{{ post.id }}/edit">Edit</a> | <a href="/news/{{ post.id }}/delete">Delete</a>{% endif %}
+
                         </p>
                     </div>
                     <div class="card-footer">
